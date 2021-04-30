@@ -1,5 +1,6 @@
 require_relative 'input'
 require_relative 'display'
+require 'yaml'
 
 class Hangman
   include Input
@@ -69,11 +70,30 @@ class Hangman
     system('clear')
   end
 
+  def save_game?
+    response = prompt_yes_no(print_text('want_save?'))
+    if response == 'y'
+      filename = prompt_filename(print_text('new_save'))
+      File.open("./saved_sessions/#{filename}.yml", 'w') { |file| YAML.dump([] << self, file) }
+    end
+    return if response == 'n'
+  end
+
+  # def load_game?
+  #   response = prompt_yes_no(print_text('want_load?'))
+  #   if response == 'y'
+  #     loadfile = YAML::load(File.open("./saved_sessions/asd.yml"))
+  #     puts loadfile
+  #   end
+  #   return if response == 'n'
+  # end
+
   def game_loop
     while true
       show_num_letters(random_word)
       show_life(num_lives)
       show_blanks(blanks)
+      save_game?
       get_letter_input
       clear_screen
       update_blanks if input_right? == true
@@ -90,6 +110,7 @@ class Hangman
   end
 
   def game_flow
+    load_game?
     get_lives
     clear_screen
     get_random_word
@@ -99,3 +120,4 @@ class Hangman
 end
 
 Hangman.new.game_flow
+
