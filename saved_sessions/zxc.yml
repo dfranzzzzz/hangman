@@ -1,0 +1,7 @@
+---
+- !ruby/object:Hangman
+  num_lives: 5
+  random_word: CONCORDANTLY
+  split_letters: C O N C O R D A N T L Y
+  blanks: C O N C O R D A N T L _
+  letter_input: C

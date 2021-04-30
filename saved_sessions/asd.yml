@@ -1,7 +1,7 @@
 ---
 - !ruby/object:Hangman
-  num_lives: 10
+  num_lives: 8
   random_word: VENUSIAN
   split_letters: V E N U S I A N
-  blanks: _ E _ _ _ I _ _
-  letter_input: R
+  blanks: V E N _ S I _ N
+  letter_input: N

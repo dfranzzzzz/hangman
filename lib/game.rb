@@ -26,7 +26,6 @@ class Hangman
     }
     word_bank.close
     @random_word = useable_words.sample
-    # puts random_word
   end
 
   def get_letter_input
@@ -73,31 +72,36 @@ class Hangman
   def save_game?
     response = prompt_yes_no(print_text('want_save?'))
     if response == 'y'
+      puts "Note: Previously saved file will be overwritten if you choose the same file name"
       filename = prompt_filename(print_text('new_save'))
       File.open("./saved_sessions/#{filename}.yml", 'w') { |file| YAML.dump([] << self, file) }
     end
     return if response == 'n'
   end
 
-  # def load_game?
-  #   response = prompt_yes_no(print_text('want_load?'))
-  #   if response == 'y'
-  #     loadfile = YAML::load(File.open("./saved_sessions/asd.yml"))
-  #     puts loadfile
-  #   end
-  #   return if response == 'n'
-  # end
+  def load_game
+    filename = prompt_filename(print_text('load_file'))
+    yaml = YAML.load_file("./saved_sessions/#{filename}.yml")
+    @num_lives = yaml[0].num_lives.to_i
+    @random_word = yaml[0].random_word
+    @blanks = yaml[0].blanks
+    @split_letters = yaml[0].split_letters
+    game_loop
+  end
 
   def game_loop
+    i = 0
+    clear_screen
     while true
       show_num_letters(random_word)
       show_life(num_lives)
       show_blanks(blanks)
-      save_game?
+      save_game? if i > 0
       get_letter_input
       clear_screen
       update_blanks if input_right? == true
       decrease_lives if input_right? == false
+      i = 1
       if winner? == true
         show_winner(random_word)
         break
@@ -110,14 +114,13 @@ class Hangman
   end
 
   def game_flow
-    load_game?
-    get_lives
-    clear_screen
-    get_random_word
-    make_blanks
-    game_loop
+    response = prompt_yes_no(print_text('want_load?'))
+    load_game if response == 'y'
+    if response == 'n'
+      get_lives
+      get_random_word
+      make_blanks
+      game_loop
+    end
   end
 end
-
-Hangman.new.game_flow
-

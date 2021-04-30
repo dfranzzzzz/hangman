@@ -4,6 +4,7 @@ module Input
       'num_lives' => "Enter the number of lives you will have (10-15): ",
       'input_letter' => "Enter a letter: ",
       'new_save' => "Enter session name: ",
+      'load_file' => "Enter the file name you want to load: ",
       'want_save?' => "Do you want to save your game? (y/n): ",
       'want_load?' => "Do you want to load saved session? (y/n): "
     }[message]
