@@ -5,11 +5,12 @@ require 'yaml'
 class Hangman
   include Input
   include Display
-  attr_reader :random_word, :split_letters
-  attr_accessor :num_lives, :blanks, :letter_input
+  attr_reader :random_word, :split_letters, :letter_input, :used_letters
+  attr_accessor :num_lives, :blanks
 
   def initialize
     puts intro
+    @used_letters = Array.new
   end
 
   def get_lives
@@ -30,7 +31,11 @@ class Hangman
 
   def get_letter_input
     @letter_input = prompt_letter(print_text('input_letter'))
-    puts letter_input
+    letter_input
+  end
+
+  def letter_invalid
+    used_letters.push(letter_input)
   end
 
   def decrease_lives
@@ -45,6 +50,11 @@ class Hangman
   def input_right?
     return true if split_letters.include?(letter_input)
     return false
+  end
+
+  def input_valid?
+    return false if used_letters.include?(letter_input)
+    return true
   end
 
   def update_blanks
@@ -73,6 +83,7 @@ class Hangman
     response = prompt_yes_no(print_text('want_save?'))
     if response == 'y'
       puts "Note: Previously saved file will be overwritten if you choose the same file name"
+      show_saved_files
       filename = prompt_filename(print_text('new_save'))
       File.open("./saved_sessions/#{filename}.yml", 'w') { |file| YAML.dump([] << self, file) }
     end
@@ -80,28 +91,41 @@ class Hangman
   end
 
   def load_game
+    saved_sessions = show_saved_files
     filename = prompt_filename(print_text('load_file'))
+    until saved_sessions.include?(filename)
+      puts "#{filename} is not on the list."
+      filename = prompt_filename(print_text('load_file'))
+    end
     yaml = YAML.load_file("./saved_sessions/#{filename}.yml")
     @num_lives = yaml[0].num_lives.to_i
     @random_word = yaml[0].random_word
     @blanks = yaml[0].blanks
     @split_letters = yaml[0].split_letters
+    @used_letters = yaml[0].used_letters
     game_loop
   end
 
   def game_loop
-    i = 0
+    first_guess = true
     clear_screen
     while true
       show_num_letters(random_word)
       show_life(num_lives)
       show_blanks(blanks)
-      save_game? if i > 0
+      save_game? if first_guess == false
       get_letter_input
+      input_valid?
+      while input_valid? == false
+        puts "You have already picked that letter previously."
+        get_letter_input
+        # input_valid?
+      end
+      letter_invalid
+      first_guess = false
       clear_screen
       update_blanks if input_right? == true
       decrease_lives if input_right? == false
-      i = 1
       if winner? == true
         show_winner(random_word)
         break

@@ -1,7 +1,15 @@
 ---
 - !ruby/object:Hangman
-  num_lives: 11
-  random_word: VENUSIAN
-  split_letters: V E N U S I A N
-  blanks: _ E _ _ _ I _ _
-  letter_input: I
+  used_letters:
+  - I
+  - A
+  - E
+  - O
+  - S
+  - G
+  - B
+  num_lives: 8
+  random_word: GIBSON
+  split_letters: G I B S O N
+  blanks: G I B S O _
+  letter_input: B

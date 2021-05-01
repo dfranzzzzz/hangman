@@ -19,6 +19,13 @@ module Display
     puts "You lose.. The word is #{word}"
   end
 
+  def show_saved_files
+    puts "This is the list of all the saved sessions: "
+    files = Dir["./saved_sessions/*"].map { | file | File.basename(file,File.extname(file))}
+    puts files
+    files
+  end
+
   def intro
     <<~HEREDOC
       This is HANGMAN Console! 
